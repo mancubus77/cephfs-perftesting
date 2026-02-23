@@ -10,11 +10,11 @@ PVC_SIZE="50Gi"
 MOUNT_PATH="/data"
 
 # Benchmark parameters
-FILES=256
-SIZE="128M"
+FILES=4096
+SIZE="4K"
 THREADS=16
-ITERATIONS=3
-BLOCKSIZE="4K"
+ITERATIONS=30
+BLOCK=4K
 
 echo "=========================================="
 echo " POSIX CephFS Benchmark (fs-bench)"
@@ -83,7 +83,7 @@ spec:
             - "--iterations"
             - "${ITERATIONS}"
             - "--block-size"
-            - "${BLOCKSIZE}"
+            - "${BLOCK}"
           volumeMounts:
             - name: cephfs-data
               mountPath: ${MOUNT_PATH}
