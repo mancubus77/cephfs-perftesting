@@ -10,6 +10,7 @@ FILES=256
 SIZE=$((128 * 2**20))
 THREADS=8
 ITERATIONS=3
+BLOCK
 
 echo "=========================================="
 echo " Starting CephFS Benchmark Setup"
@@ -56,7 +57,8 @@ oc exec "$POD_NAME" -n "$NAMESPACE" -- bash -c "env CEPH_ARGS='--log-to-stderr=f
     --files $FILES \
     --size=$SIZE \
     --threads=$THREADS \
-    --iterations $ITERATIONS"
+    --iterations $ITERATIONS \
+    --block-size=$BLOCKSIZE
 echo "------------------------------------------"
 
 echo "Cleaning up ephemeral pod..."

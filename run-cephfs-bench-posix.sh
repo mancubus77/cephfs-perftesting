@@ -14,6 +14,7 @@ FILES=256
 SIZE="128M"
 THREADS=16
 ITERATIONS=3
+BLOCKSIZE="4K"
 
 echo "=========================================="
 echo " POSIX CephFS Benchmark (fs-bench)"
@@ -81,6 +82,8 @@ spec:
             - "${THREADS}"
             - "--iterations"
             - "${ITERATIONS}"
+            - "--block-size"
+            - "${BLOCKSIZE}"
           volumeMounts:
             - name: cephfs-data
               mountPath: ${MOUNT_PATH}
