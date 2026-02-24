@@ -6,11 +6,11 @@ POD_NAME="cephfs-bench-runner"
 IMAGE="quay.io/mancubus77/ceph-tools:latest"
 FILESYSTEM="ocs-storagecluster-cephfilesystem"
 ROOT_PATH="/"
-FILES=256
-SIZE=$((128 * 2**20))
-THREADS=8
+FILES=16384
+SIZE=4K
+THREADS=16
 ITERATIONS=3
-BLOCK
+BLOCK_SIZE=128
 
 echo "=========================================="
 echo " Starting CephFS Benchmark Setup"
@@ -58,7 +58,7 @@ oc exec "$POD_NAME" -n "$NAMESPACE" -- bash -c "env CEPH_ARGS='--log-to-stderr=f
     --size=$SIZE \
     --threads=$THREADS \
     --iterations $ITERATIONS \
-    --block-size=$BLOCKSIZE
+    --block-size $BLOCK_SIZE"
 echo "------------------------------------------"
 
 echo "Cleaning up ephemeral pod..."

@@ -1,11 +1,10 @@
 #!/bin/bash
 set -e
 
-NAMESPACE="fs-bench"
-JOB_NAME="fs-bench-job"
-PVC_NAME="fs-bench-pvc"
+NAMESPACE="rbd-bench"
+JOB_NAME="rbd-bench-job"
+PVC_NAME="rbd-bench-pvc"
 IMAGE="quay.io/mancubus77/bench-cephfs-fs:latest"
-STORAGE_CLASS="ocs-storagecluster-cephfs"
 PVC_SIZE="50Gi"
 MOUNT_PATH="/data"
 
@@ -17,7 +16,7 @@ ITERATIONS=3
 BLOCK=128
 
 echo "=========================================="
-echo " POSIX CephFS Benchmark (fs-bench)"
+echo " POSIX RBD Benchmark (rbd-bench)"
 echo "=========================================="
 
 echo "[1/6] Creating namespace '${NAMESPACE}'..."
@@ -38,11 +37,10 @@ metadata:
   namespace: ${NAMESPACE}
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
       storage: ${PVC_SIZE}
-  storageClassName: ${STORAGE_CLASS}
 EOF
 
 echo "      Waiting for PVC to be bound..."
@@ -60,12 +58,12 @@ spec:
   template:
     metadata:
       labels:
-        app: fs-bench
+        app: rbd-bench
     spec:
       securityContext:
         fsGroupChangePolicy: "OnRootMismatch"
       containers:
-        - name: fs-bench
+        - name: rbd-bench
           image: ${IMAGE}
           imagePullPolicy: Always
           securityContext:
@@ -83,19 +81,19 @@ spec:
             - "--iterations"
             - "${ITERATIONS}"
             - "--block-size"
-            - "${BLOCK}"
+            - "128K"
           volumeMounts:
-            - name: cephfs-data
+            - name: rbd-data
               mountPath: ${MOUNT_PATH}
       volumes:
-        - name: cephfs-data
+        - name: rbd-data
           persistentVolumeClaim:
             claimName: ${PVC_NAME}
       restartPolicy: Never
 EOF
 
 echo "      Waiting for pod to start..."
-oc wait --for=condition=Ready pod -l app=fs-bench -n "$NAMESPACE" --timeout=120s >/dev/null 2>&1 || true
+oc wait --for=condition=Ready pod -l app=rbd-bench -n "$NAMESPACE" --timeout=120s >/dev/null 2>&1 || true
 
 echo "[6/6] Streaming benchmark output..."
 echo "------------------------------------------"
@@ -108,7 +106,7 @@ if [ "$STATUS" = "Complete" ]; then
     echo "Benchmark completed successfully."
 else
     echo "Benchmark finished with status: ${STATUS}"
-    echo "Check pod logs: oc logs -l app=fs-bench -n ${NAMESPACE}"
+    echo "Check pod logs: oc logs -l app=rbd-bench -n ${NAMESPACE}"
 fi
 
 echo ""
