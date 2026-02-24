@@ -58,7 +58,8 @@ oc exec "$POD_NAME" -n "$NAMESPACE" -- bash -c "env CEPH_ARGS='--log-to-stderr=f
     --size=$SIZE \
     --threads=$THREADS \
     --iterations $ITERATIONS \
-    --block-size $BLOCK_SIZE"
+    --block-size $BLOCK_SIZE \
+    --per-thread-mount"
 echo "------------------------------------------"
 
 echo "Cleaning up ephemeral pod..."
