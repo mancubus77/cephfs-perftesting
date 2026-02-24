@@ -81,7 +81,7 @@ spec:
             - "--iterations"
             - "${ITERATIONS}"
             - "--block-size"
-            - "128K"
+            - "${BLOCK}"
           volumeMounts:
             - name: rbd-data
               mountPath: ${MOUNT_PATH}
